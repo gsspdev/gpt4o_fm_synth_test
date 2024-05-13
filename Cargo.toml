@@ -1,0 +1,8 @@
+[package]
+name = "gpt4o_fm_synth_test"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.4", features = ["derive"] }
+hound = "3.4.0"
