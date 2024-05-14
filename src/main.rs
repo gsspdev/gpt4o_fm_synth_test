@@ -7,29 +7,56 @@ use hound;
 #[command(version = "1.0")]
 #[command(about = "A basic FM synthesizer")]
 struct Args {
-    /// Carrier frequency in Hz
     #[arg(short, long, default_value = "440")]
-    carrier_freq: f32,
+    carrier: f32,
 
-    /// Modulator frequency in Hz
     #[arg(short, long, default_value = "220")]
-    modulator_freq: f32,
+    modulator: f32,
 
-    /// Modulation index
     #[arg(short, long, default_value = "1.0")]
     index: f32,
 
-    /// Duration in seconds
+    #[arg(short, long, default_value = "256.0")]
+    end: f32,
+
     #[arg(long, default_value = "5")]
     duration: u32,
 
-    /// Output file name
     #[arg(short, long, default_value = "output.wav")]
     output: String,
-}
+} // carrier, modulator, index, end. duration, output
 
 fn main() {
     let args = Args::parse();
+
+    #[derive(Debug)]
+    struct KeyFrames {
+        x: f32,
+        y: f32
+    }
+    #[derive(Debug)]
+
+    struct Frame {
+        key_frames: KeyFrames,
+    }
+
+    impl KeyFrames {
+        pub fn new(x: f32, y: f32) -> Self {
+            KeyFrames { x, y, number: 0 }
+        }
+    }
+
+    enum KeyFrames {
+        KeyFrame { x: f32, y: f32 },
+    }
+
+
+    let wavet1 = KeyFrame::new(0.0, 5.0,);
+    let x_step = duration / 256.0;
+    let y_step = (wavet1.end - wavet1.start) / 256.0;
+    let frames: Vec<{ AutomationFrame { auto_frame: auto_frame { x: f32, y: f32 } } }> = Vec::new();
+
+    println!("{}", wavet1.start);
 
     const SAMPLE_RATE: u32 = 44100;
     let num_samples = SAMPLE_RATE * args.duration;
@@ -46,11 +73,11 @@ fn main() {
 
     for t in 0..num_samples {
         let time = t as f32 / SAMPLE_RATE as f32;
-        let modulator_signal = (2.0 * std::f32::consts::PI * args.modulator_freq * time).sin();
-        let carrier_signal = (2.0 * std::f32::consts::PI * args.carrier_freq * time
-            + args.index * modulator_signal)
+        let modulator = (2.0 * std::f32::consts::PI * args.modulator * time).sin();
+        let carrier = (2.0 * std::f32::consts::PI * args.carrier * time
+            + args.index * modulator)
             .sin();
-        let sample = (carrier_signal * amplitude) as i16;
+        let sample = (carrier * amplitude) as i16;
         writer.write_sample(sample).unwrap();
     }
 
